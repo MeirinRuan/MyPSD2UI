@@ -7,24 +7,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MyPSD2UI.Operate;
+using PSDFile;
 
 namespace MyPSD2UI
 {
-    public partial class MainForm : Form
-    {
-        public MainForm()
-        {
-            InitializeComponent();
-        }
+	public partial class MainForm : Form
+	{
+		public MainForm()
+		{
+			InitializeComponent();
+		}
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                ImagePsd _Psd = new ImagePsd(openFileDialog1.FileName);
-                pictureBox1.Image = _Psd.PSDImage;
-            }
-        }
-    }
+		private void button1_Click(object sender, EventArgs e)
+		{
+			if (openFileDialog1.ShowDialog() == DialogResult.OK)
+			{
+				Bitmap bmp = null;
+
+				var psdFile = new PsdFile(openFileDialog1.FileName, new LoadContext());
+
+				bmp = psdFile.BaseLayer.GetBitmap();
+
+				if (bmp == null)
+					throw new ApplicationException();
+
+				pictureBox1.Image = bmp;
+				pictureBox1.Size = bmp.Size;
+			}
+		}
+	}
 }
