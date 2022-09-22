@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,11 +33,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PSDFile">
-      <HintPath>.\PSDFile.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -61,6 +60,43 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PSDFile\Compression\EndianReverser.cs" />
+    <Compile Include="PSDFile\Compression\ImageData.cs" />
+    <Compile Include="PSDFile\Compression\ImageDataFactory.cs" />
+    <Compile Include="PSDFile\Compression\RawImage.cs" />
+    <Compile Include="PSDFile\Compression\RleImage.cs" />
+    <Compile Include="PSDFile\Compression\ZipImage.cs" />
+    <Compile Include="PSDFile\Compression\ZipPredict16Image.cs" />
+    <Compile Include="PSDFile\Compression\ZipPredict32Image.cs" />
+    <Compile Include="PSDFile\Exceptions.cs" />
+    <Compile Include="PSDFile\ImageResources.cs" />
+    <Compile Include="PSDFile\ImageResources\AlphaChannelNames.cs" />
+    <Compile Include="PSDFile\ImageResources\RawImageResource.cs" />
+    <Compile Include="PSDFile\ImageResources\ResolutionInfo.cs" />
+    <Compile Include="PSDFile\ImageResources\Thumbnail.cs" />
+    <Compile Include="PSDFile\ImageResources\UnicodeAlphaNames.cs" />
+    <Compile Include="PSDFile\ImageResources\VersionInfo.cs" />
+    <Compile Include="PSDFile\ImageResources\XmpResource.cs" />
+    <Compile Include="PSDFile\Layers\BlendingRanges.cs" />
+    <Compile Include="PSDFile\Layers\Channel.cs" />
+    <Compile Include="PSDFile\Layers\Layer.cs" />
+    <Compile Include="PSDFile\Layers\LayerGroup.cs" />
+    <Compile Include="PSDFile\Layers\LayerInfo.cs" />
+    <Compile Include="PSDFile\Layers\LayerInfo\InfoLayers.cs" />
+    <Compile Include="PSDFile\Layers\LayerInfo\LayerSectionInfo.cs" />
+    <Compile Include="PSDFile\Layers\LayerInfo\LayerUnicodeName.cs" />
+    <Compile Include="PSDFile\Layers\LayerInfo\RawLayerInfo.cs" />
+    <Compile Include="PSDFile\Layers\Mask.cs" />
+    <Compile Include="PSDFile\LoadContext.cs" />
+    <Compile Include="PSDFile\PsdBinaryReader.cs" />
+    <Compile Include="PSDFile\PsdBinaryWriter.cs" />
+    <Compile Include="PSDFile\PsdBlendMode.cs" />
+    <Compile Include="PSDFile\PsdBlockLengthWriter.cs" />
+    <Compile Include="PSDFile\PsdFile.cs" />
+    <Compile Include="PSDFile\RleReader.cs" />
+    <Compile Include="PSDFile\RleRowLengths.cs" />
+    <Compile Include="PSDFile\RleWriter.cs" />
+    <Compile Include="PSDFile\Util.cs" />
     <EmbeddedResource Include="Form\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

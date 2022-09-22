@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -33,7 +34,13 @@ namespace MyPSD2UI
 
 				pictureBox1.Image = bmp;
 				pictureBox1.Size = bmp.Size;
-			}
+
+				/*foreach (var layer in psdFile.Layers)
+				{
+					Debug.WriteLine(layer.Name);
+				}*/
+				
+            }
 		}
 	}
 }
