@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -35,12 +36,39 @@ namespace MyPSD2UI
 				pictureBox1.Image = bmp;
 				pictureBox1.Size = bmp.Size;
 
-				/*foreach (var layer in psdFile.Layers)
+                psdFile.Layers.Reverse();
+
+                Stack stack = new Stack();
+
+				List<LayerGroup> layerGroups = new List<LayerGroup>();
+				LayerGroup layerGroup = new LayerGroup();
+
+                foreach (var layer in psdFile.Layers)
 				{
-					Debug.WriteLine(layer.Name);
-				}*/
+					foreach (var layerInfo in layer.AdditionalInfo)
+					{
+						if (layerInfo.Key == "lsct")
+						{
+							var layerSectionInfo = (LayerSectionInfo)layerInfo;
+
+							Debug.WriteLine(layerSectionInfo.SectionType);
+
+							if (layerSectionInfo.SectionType == LayerSectionType.OpenFolder || layerSectionInfo.SectionType == LayerSectionType.ClosedFolder)
+							{
+								stack.Push(layer);
+							}
+							else if (layerSectionInfo.SectionType == LayerSectionType.SectionDivider)
+							{
+								stack.Pop();
+							}
+						}
+                    }
+				}
+
 				
-            }
+
+
+			}
 		}
 	}
 }
