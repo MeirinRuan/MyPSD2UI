@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -17,20 +18,18 @@ namespace PSDFile
 
         }
 
-        public List<Layer> Layers { get; }
+        public List<Layer> Layers = new List<Layer>();
 
-        public int Width { get; }
+        public int Width { get; set; }
 
-        public int Height { get; }
+        public int Height { get; set; }
 
-        public void AddLayer(Layer layer)
-        {
-            
-        }
+    }
 
-        public Layer GetLayerSection(Layer layer)
-        {
-
-        }
+    public enum LayerGroupPostion
+    {
+        StartLayer,
+        MiddleLayer,
+        EndLayer,
     }
 }
