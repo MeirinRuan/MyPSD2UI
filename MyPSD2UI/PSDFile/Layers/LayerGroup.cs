@@ -17,12 +17,24 @@ namespace PSDFile
         {
 
         }
+        public LayerGroup(Layer layer)
+        {
+            Layers.Add(layer);
+            Name = layer.Name;
+        }
 
         public List<Layer> Layers = new List<Layer>();
 
         public int Width { get; set; }
 
         public int Height { get; set; }
+
+        public string Name { get; set; }
+
+        public void AddLayer(Layer layer)
+        {
+            Layers.Add(layer);
+        }
 
     }
 

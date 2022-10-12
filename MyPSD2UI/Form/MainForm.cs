@@ -67,13 +67,13 @@ namespace MyPSD2UI
                     if (!isStart)
                     {
                         isStart = true;
-                        layerGroup = new LayerGroup();
-                        layerGroup.Layers.Add(layer);
+                        layerGroup = new LayerGroup(layer);
+                        //layerGroup.AddLayer(layer);
                         continue;
                     }
                     else
                     {
-                        layerGroup.Layers.Add(layer);
+                        layerGroup.AddLayer(layer);
                         continue;
                     }
                 }
@@ -94,13 +94,13 @@ namespace MyPSD2UI
                 {
                     if (isStart)
                     {
-                        layerGroup.Layers.Add(layer);
+                        layerGroup.AddLayer(layer);
                         continue;
                     }
                     else
                     {
-                        layerGroup = new LayerGroup();
-                        layerGroup.Layers.Add(layer);
+                        layerGroup = new LayerGroup(layer);
+                        //layerGroup.AddLayer(layer);
                         layerGroups.Add(layerGroup);
                         continue;
                     }
@@ -114,7 +114,7 @@ namespace MyPSD2UI
 		{
 			if (openFileDialog1.ShowDialog() == DialogResult.OK)
 			{
-				Bitmap bmp = null;
+				//Bitmap bmp = null;
 
 				var psdFile = new PsdFile(openFileDialog1.FileName, new LoadContext());
 
@@ -122,14 +122,36 @@ namespace MyPSD2UI
 
                 AddLayers(psdFile.Layers);
 
-                bmp = layerGroups[0].Layers[1].GetBitmap();
+                listBox1.DataSource = layerGroups;
+                listBox1.DisplayMember = "Name";
+                
+
+                /*bmp = layerGroups[0].Layers[1].GetBitmap();
 
                 if (bmp == null)
                     throw new ApplicationException();
 
-                pictureBox1.Image = bmp;
-                pictureBox1.Size = bmp.Size;
+                pictureBox1.Image = bmp;*/
+
             }
 		}
-	}
+
+        private void listBox1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            LayerGroup layerGroup = listBox1.SelectedItem as LayerGroup;
+
+            flowLayoutPanel1.Controls.Clear();
+
+            foreach (var layer in layerGroup.Layers)
+            {
+                Bitmap bitmap = layer.GetBitmap();
+                PictureBox pic = new PictureBox();
+                pic.Image = bitmap;
+                pic.BorderStyle = BorderStyle.FixedSingle;
+                pic.SizeMode = PictureBoxSizeMode.AutoSize;
+                flowLayoutPanel1.Controls.Add(pic);
+            }
+
+        }
+    }
 }
