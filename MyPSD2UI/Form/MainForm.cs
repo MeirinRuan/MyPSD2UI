@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections;
+﻿using PSDFile;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using PSDFile;
 
 namespace MyPSD2UI
 {
-	public partial class MainForm : Form
+    public partial class MainForm : Form
 	{
         List<LayerGroup> layerGroups = new List<LayerGroup>();
 
@@ -23,7 +16,7 @@ namespace MyPSD2UI
 		}
 
         /// <summary>
-        /// find layer postion
+        /// 按照sectiontype来标记layergroup
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
@@ -52,47 +45,49 @@ namespace MyPSD2UI
         }
 
         /// <summary>
-        /// add layer group to layer groups
+        /// 插入layer group
         /// </summary>
-        public void AddLayers(List<Layer> layers)
+        /// <param name="layers"></param>
+        public void AddLayerGroup(List<Layer> layers)
         {
-            var isStart = false;
+            var startIndex = 0;
             LayerGroup layerGroup = new LayerGroup();
-
 
             foreach (var layer in layers)
             {
                 if (FindLayerPostion(layer) == LayerGroupPostion.StartLayer)
                 {
-                    if (!isStart)
+                    if (startIndex == 0)
                     {
-                        isStart = true;
+                        startIndex++;
                         layerGroup = new LayerGroup(layer);
-                        //layerGroup.AddLayer(layer);
                         continue;
                     }
                     else
                     {
+                        startIndex++;
                         layerGroup.AddLayer(layer);
                         continue;
                     }
                 }
-                else if (isStart && FindLayerPostion(layer) == LayerGroupPostion.EndLayer)
+                else if (startIndex > 0 && FindLayerPostion(layer) == LayerGroupPostion.EndLayer)
                 {
-                    if (isStart)
+
+                    if (startIndex == 1)
                     {
-                        isStart = false;
+                        startIndex--;
                         layerGroups.Add(layerGroup);
                         continue;
                     }
                     else
                     {
+                        startIndex--;
                         continue;
                     }
                 }
                 else if (FindLayerPostion(layer) == LayerGroupPostion.MiddleLayer)
                 {
-                    if (isStart)
+                    if (startIndex > 0)
                     {
                         layerGroup.AddLayer(layer);
                         continue;
@@ -100,14 +95,13 @@ namespace MyPSD2UI
                     else
                     {
                         layerGroup = new LayerGroup(layer);
-                        //layerGroup.AddLayer(layer);
                         layerGroups.Add(layerGroup);
                         continue;
                     }
                 }
             }
 
-            Debug.WriteLine("add layer group finish");
+           
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -120,25 +114,43 @@ namespace MyPSD2UI
 
                 psdFile.Layers.Reverse();
 
-                AddLayers(psdFile.Layers);
+                //构建layergrups
+                AddLayerGroup(psdFile.Layers);
 
+                //设置layergroup的坐标
+                foreach (var layerGroup in layerGroups)
+                {
+                    layerGroup.SetRect();
+                }
+
+                //layergroup列表
                 listBox1.DataSource = layerGroups;
                 listBox1.DisplayMember = "Name";
-                
 
-                /*bmp = layerGroups[0].Layers[1].GetBitmap();
-
-                if (bmp == null)
-                    throw new ApplicationException();
-
-                pictureBox1.Image = bmp;*/
-
+                //预览
+                foreach (var layerGroup in layerGroups)
+                {
+                    Graphics g = CreateGraphics();
+                    Pen pen = new Pen(Color.Black);
+                    var rect = new Rectangle(
+                        layerGroup.Rect.X + flowLayoutPanel1.Location.X,
+                        layerGroup.Rect.Y + flowLayoutPanel1.Location.Y,
+                        layerGroup.Rect.Width,
+                        layerGroup.Rect.Height);
+                    g.DrawRectangle(pen, rect);
+                }
             }
 		}
 
         private void listBox1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            //显示坐标
             LayerGroup layerGroup = listBox1.SelectedItem as LayerGroup;
+            layerGroup.SetRect();
+            textBox1.Text = layerGroup.Rect.ToString();
+
+            //显示layer的位图
+            /* LayerGroup layerGroup = listBox1.SelectedItem as LayerGroup;
 
             flowLayoutPanel1.Controls.Clear();
 
@@ -150,8 +162,19 @@ namespace MyPSD2UI
                 pic.BorderStyle = BorderStyle.FixedSingle;
                 pic.SizeMode = PictureBoxSizeMode.AutoSize;
                 flowLayoutPanel1.Controls.Add(pic);
-            }
+            }*/
 
+            // 绘制控件
+            /* LayerGroup layerGroup = listBox1.SelectedItem as LayerGroup;
+
+            Graphics g = CreateGraphics();
+            Pen pen = new Pen(Color.Black);
+            var rect = new Rectangle(
+                layerGroup.Rect.X + flowLayoutPanel1.Location.X,
+                layerGroup.Rect.Y + flowLayoutPanel1.Location.Y,
+                layerGroup.Rect.Width,
+                layerGroup.Rect.Height);
+            g.DrawRectangle(pen, rect);*/
         }
     }
 }
