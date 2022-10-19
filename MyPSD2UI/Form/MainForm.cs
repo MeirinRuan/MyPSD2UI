@@ -123,10 +123,6 @@ namespace MyPSD2UI
                     layerGroup.SetRect();
                 }
 
-                //layergroup列表
-                listBox1.DataSource = layerGroups;
-                listBox1.DisplayMember = "Name";
-
                 //预览
                 foreach (var layerGroup in layerGroups)
                 {
@@ -138,18 +134,39 @@ namespace MyPSD2UI
                         layerGroup.Rect.Width,
                         layerGroup.Rect.Height);
                     g.DrawRectangle(pen, rect);
+                    g.DrawString(layerGroup.Name, new Font("宋体",14), new SolidBrush(Color.Black), rect);
+                    
+                    //显示位图(无法适配所有psd文件)
+                    /*foreach( var layer in layerGroup.Layers)
+                    {
+                        if (layer.HasImage)
+                            g.DrawImage(layer.GetBitmap(), rect);
+                    }*/
                 }
+
+                //layergroup列表
+                checkedListBox1.DataSource = layerGroups;
+                checkedListBox1.DisplayMember = "Name";
+
+                //默认全选
+                for (int i = 0; i < checkedListBox1.Items.Count; i++)
+                {
+                    checkedListBox1.SetItemChecked(i, true);
+                }
+                textBox1.Clear();
             }
 		}
 
-        private void listBox1_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             //显示坐标
-            LayerGroup layerGroup = listBox1.SelectedItem as LayerGroup;
-            layerGroup.SetRect();
+            LayerGroup layerGroup = checkedListBox1.SelectedItem as LayerGroup;
+
+            //layerGroup.SetRect();
+
             textBox1.Text = layerGroup.Rect.ToString();
 
-            //显示layer的位图
+            //显示位图
             /* LayerGroup layerGroup = listBox1.SelectedItem as LayerGroup;
 
             flowLayoutPanel1.Controls.Clear();

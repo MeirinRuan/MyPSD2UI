@@ -36,6 +36,9 @@ namespace PSDFile
             Layers.Add(layer);
         }
 
+        /// <summary>
+        /// 计算rect范围
+        /// </summary>
         public void SetRect()
         {
             var maxRight = 0;
@@ -43,12 +46,12 @@ namespace PSDFile
 
             foreach (Layer layer in Layers)
             {
-                if (layer.Rect.Width > 0 && layer.Rect.Height > 0)
+                if (layer.HasImage)
                 {
                     if (layer.Rect.X < Rect.X)
-                        Rect.X = layer.Rect.X;
+                        Rect.X = layer.Rect.X < 0 ? 0 : layer.Rect.X;
                     if (layer.Rect.Y < Rect.Y)
-                        Rect.Y = layer.Rect.Y;
+                        Rect.Y = layer.Rect.Y < 0 ? 0 : layer.Rect.Y;
                     if (layer.Rect.Right > maxRight)
                         maxRight = layer.Rect.Right;
                     if (layer.Rect.Bottom > maxBottom)
@@ -56,10 +59,8 @@ namespace PSDFile
                 }
             }
 
-            Rect.Width = Rect.X < 0 ? maxRight + Rect.X : maxRight - Rect.X;
-            Rect.Height = Rect.Y < 0 ? maxBottom + Rect.Y  : maxBottom - Rect.Y;
-            Rect.X = Rect.X < 0 ? 0 : Rect.X;
-            Rect.Y = Rect.Y < 0 ? 0 : Rect.Y;
+            Rect.Width = (Rect.X < 0 ? maxRight + Rect.X : maxRight - Rect.X) > maxWidth ? maxWidth : (Rect.X < 0 ? maxRight + Rect.X : maxRight - Rect.X);
+            Rect.Height = (Rect.Y < 0 ? maxBottom + Rect.Y  : maxBottom - Rect.Y) > maxHeight ? maxHeight : (Rect.Y < 0 ? maxBottom + Rect.Y : maxBottom - Rect.Y);
         }
     }
 
