@@ -1,8 +1,8 @@
-﻿using PSDFile;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using PSDFile;
 
 namespace MyPSD2UI
 {
