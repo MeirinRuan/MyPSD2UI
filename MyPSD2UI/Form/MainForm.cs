@@ -8,101 +8,11 @@ namespace MyPSD2UI
 {
     public partial class MainForm : Form
 	{
-        List<LayerGroup> layerGroups = new List<LayerGroup>();
 
         public MainForm()
 		{
 			InitializeComponent();
 		}
-
-        /// <summary>
-        /// 按照sectiontype来标记layergroup
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <returns></returns>
-        public LayerGroupPostion FindLayerPostion(Layer layer)
-        {
-            foreach (var layerInfo in layer.AdditionalInfo)
-            {
-                if (layerInfo.Key == "lsct")
-                {
-                    var layerSectionInfo = (LayerSectionInfo)layerInfo;
-
-                    //Debug.WriteLine(layerSectionInfo.SectionType);
-
-                    if (layerSectionInfo.SectionType == LayerSectionType.OpenFolder || layerSectionInfo.SectionType == LayerSectionType.ClosedFolder)
-                    {
-                        return LayerGroupPostion.StartLayer;
-                    }
-                    else if (layerSectionInfo.SectionType == LayerSectionType.SectionDivider)
-                    {
-                        return LayerGroupPostion.EndLayer;
-                    }
-                }
-            }
-
-            return LayerGroupPostion.MiddleLayer;
-        }
-
-        /// <summary>
-        /// 插入layer group
-        /// </summary>
-        /// <param name="layers"></param>
-        public void AddLayerGroup(List<Layer> layers)
-        {
-            var startIndex = 0;
-            LayerGroup layerGroup = new LayerGroup();
-
-            foreach (var layer in layers)
-            {
-                if (FindLayerPostion(layer) == LayerGroupPostion.StartLayer)
-                {
-                    if (startIndex == 0)
-                    {
-                        startIndex++;
-                        layerGroup = new LayerGroup(layer);
-                        continue;
-                    }
-                    else
-                    {
-                        startIndex++;
-                        layerGroup.AddLayer(layer);
-                        continue;
-                    }
-                }
-                else if (startIndex > 0 && FindLayerPostion(layer) == LayerGroupPostion.EndLayer)
-                {
-
-                    if (startIndex == 1)
-                    {
-                        startIndex--;
-                        layerGroups.Add(layerGroup);
-                        continue;
-                    }
-                    else
-                    {
-                        startIndex--;
-                        continue;
-                    }
-                }
-                else if (FindLayerPostion(layer) == LayerGroupPostion.MiddleLayer)
-                {
-                    if (startIndex > 0)
-                    {
-                        layerGroup.AddLayer(layer);
-                        continue;
-                    }
-                    else
-                    {
-                        layerGroup = new LayerGroup(layer);
-                        layerGroups.Add(layerGroup);
-                        continue;
-                    }
-                }
-            }
-
-           
-        }
 
         private void button1_Click(object sender, EventArgs e)
 		{
@@ -112,19 +22,8 @@ namespace MyPSD2UI
 
 				var psdFile = new PsdFile(openFileDialog1.FileName, new LoadContext());
 
-                psdFile.Layers.Reverse();
-
-                //构建layergrups
-                AddLayerGroup(psdFile.Layers);
-
-                //设置layergroup的坐标
-                foreach (var layerGroup in layerGroups)
-                {
-                    layerGroup.SetRect();
-                }
-
                 //预览
-                foreach (var layerGroup in layerGroups)
+                foreach (var layerGroup in psdFile.LayerGroups)
                 {
                     Graphics g = CreateGraphics();
                     Pen pen = new Pen(Color.Black);
@@ -145,7 +44,7 @@ namespace MyPSD2UI
                 }
 
                 //layergroup列表
-                checkedListBox1.DataSource = layerGroups;
+                checkedListBox1.DataSource = psdFile.LayerGroups;
                 checkedListBox1.DisplayMember = "Name";
 
                 //默认全选

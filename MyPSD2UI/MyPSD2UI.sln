@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32802.440
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyPSD2UI", "MyPSD2UI.csproj", "{1D72F560-5585-4DAA-B78C-795EF8592871}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSDFile", "..\PSDFile\PSDFile.csproj", "{5AEA2BD0-892B-449A-AA41-D1C734DCB804}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyLib", "..\MyLib\MyLib.csproj", "{7689A230-61BD-4AA4-A824-04646187E520}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{5AEA2BD0-892B-449A-AA41-D1C734DCB804}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AEA2BD0-892B-449A-AA41-D1C734DCB804}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AEA2BD0-892B-449A-AA41-D1C734DCB804}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7689A230-61BD-4AA4-A824-04646187E520}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7689A230-61BD-4AA4-A824-04646187E520}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7689A230-61BD-4AA4-A824-04646187E520}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7689A230-61BD-4AA4-A824-04646187E520}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

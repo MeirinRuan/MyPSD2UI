@@ -62,6 +62,35 @@ namespace PSDFile
             Rect.Width = (Rect.X < 0 ? maxRight + Rect.X : maxRight - Rect.X) > maxWidth ? maxWidth : (Rect.X < 0 ? maxRight + Rect.X : maxRight - Rect.X);
             Rect.Height = (Rect.Y < 0 ? maxBottom + Rect.Y  : maxBottom - Rect.Y) > maxHeight ? maxHeight : (Rect.Y < 0 ? maxBottom + Rect.Y : maxBottom - Rect.Y);
         }
+
+        /// <summary>
+        /// 按照sectiontype来标记layergroup
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        public LayerGroupPostion FindLayerPostion(Layer layer)
+        {
+            foreach (var layerInfo in layer.AdditionalInfo)
+            {
+                if (layerInfo.Key == "lsct")
+                {
+                    var layerSectionInfo = (LayerSectionInfo)layerInfo;
+
+                    //Debug.WriteLine(layerSectionInfo.SectionType);
+
+                    if (layerSectionInfo.SectionType == LayerSectionType.OpenFolder || layerSectionInfo.SectionType == LayerSectionType.ClosedFolder)
+                    {
+                        return LayerGroupPostion.StartLayer;
+                    }
+                    else if (layerSectionInfo.SectionType == LayerSectionType.SectionDivider)
+                    {
+                        return LayerGroupPostion.EndLayer;
+                    }
+                }
+            }
+
+            return LayerGroupPostion.MiddleLayer;
+        }
     }
 
     public enum LayerGroupPostion

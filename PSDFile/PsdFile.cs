@@ -97,6 +97,7 @@ namespace PSDFile
             LoadLayerAndMaskInfo(reader);
 
             LoadImage(reader);
+            LoadLayerGroup();
             DecompressImages();
         }
 
@@ -371,6 +372,8 @@ namespace PSDFile
         public List<LayerInfo> AdditionalInfo { get; private set; }
 
         public bool AbsoluteAlpha { get; set; }
+
+        public List<LayerGroup> LayerGroups = new List<LayerGroup>();
 
         ///////////////////////////////////////////////////////////////////////////
 
@@ -776,6 +779,84 @@ namespace PSDFile
         }
 
         ///////////////////////////////////////////////////////////////////////////
+
+        /// <summary>
+        /// 载入layer group
+        /// </summary>
+        internal void LoadLayerGroup()
+        {
+            //图层是倒序的，逆序一下
+            Layers.Reverse();
+
+            AddLayerGroup();
+
+            //设置layergroup的坐标
+            foreach (var layerGroup in LayerGroups)
+            {
+                layerGroup.SetRect();
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////
+
+        /// <summary>
+        /// 插入layer group
+        /// </summary>
+        internal void AddLayerGroup()
+        {
+            var startIndex = 0;
+            LayerGroup layerGroup = new LayerGroup();
+
+            foreach (var layer in Layers)
+            {
+                if (layerGroup.FindLayerPostion(layer) == LayerGroupPostion.StartLayer)
+                {
+                    if (startIndex == 0)
+                    {
+                        startIndex++;
+                        layerGroup = new LayerGroup(layer);
+                        continue;
+                    }
+                    else
+                    {
+                        startIndex++;
+                        layerGroup.AddLayer(layer);
+                        continue;
+                    }
+                }
+                else if (startIndex > 0 && layerGroup.FindLayerPostion(layer) == LayerGroupPostion.EndLayer)
+                {
+
+                    if (startIndex == 1)
+                    {
+                        startIndex--;
+                        LayerGroups.Add(layerGroup);
+                        continue;
+                    }
+                    else
+                    {
+                        startIndex--;
+                        continue;
+                    }
+                }
+                else if (layerGroup.FindLayerPostion(layer) == LayerGroupPostion.MiddleLayer)
+                {
+                    if (startIndex > 0)
+                    {
+                        layerGroup.AddLayer(layer);
+                        continue;
+                    }
+                    else
+                    {
+                        layerGroup = new LayerGroup(layer);
+                        LayerGroups.Add(layerGroup);
+                        continue;
+                    }
+                }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////
 
         #endregion
 
