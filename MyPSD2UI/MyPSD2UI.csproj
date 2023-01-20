@@ -49,14 +49,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MyUI\MyProgress.cs" />
+    <Compile Include="MyUI\MyCombo.cs" />
+    <Compile Include="MyUI\MyCtrlParent.cs" />
+    <Compile Include="MyUI\MyButton.cs" />
     <Compile Include="Form\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MyUI\Ctrl.cs" />
-    <Compile Include="MyUI\Wnd.cs" />
+    <Compile Include="MyUI\MyCtrl.cs" />
+    <Compile Include="MyUI\MyText.cs" />
+    <Compile Include="MyUI\MyWnd.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\MainForm.resx">
@@ -86,6 +91,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MyLib\MyLib.csproj">
+      <Project>{7689a230-61bd-4aa4-a824-04646187e520}</Project>
+      <Name>MyLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PSDFile\PSDFile.csproj">
       <Project>{5aea2bd0-892b-449a-aa41-d1c734dcb804}</Project>
       <Name>PSDFile</Name>

@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace MyLib
 {
-    public class IniFiles
+    public class MyIni
     {
         public string inipath;
 
@@ -23,14 +23,14 @@ namespace MyLib
         private static extern uint GetPrivateProfileStringA(string section, string key,
             string def, byte[] retVal, int size, string filePath);
 
-        public IniFiles(string INIPath)
+        public MyIni(string INIPath)
         {
             
             inipath = INIPath;
             
         }
 
-        public IniFiles() { }
+        public MyIni() { }
 
         /// <summary> 
         /// 读出INI文件 

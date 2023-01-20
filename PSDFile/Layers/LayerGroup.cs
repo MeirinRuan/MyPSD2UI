@@ -6,6 +6,14 @@ namespace PSDFile
 {
     public class LayerGroup
     {
+
+        public const int initX = 0;
+        public const int initY = 0;
+        public const int maxX = 1280;
+        public const int maxY = 720;
+        public const int maxWidth = 1280;
+        public const int maxHeight = 720;
+
         public LayerGroup()
         {
 
@@ -15,11 +23,11 @@ namespace PSDFile
             Layers.Add(layer);
             Name = layer.Name;
         }
-
-        const int maxX = 1280;
-        const int maxY = 720;
-        const int maxWidth = 1280;
-        const int maxHeight = 720;
+        public LayerGroup(Rectangle rect, string name)
+        {
+            Rect = rect;
+            Name = name;
+        }
 
         public List<Layer> Layers = new List<Layer>();
 
