@@ -127,7 +127,10 @@ namespace MyLib
         /// </summary>
         public void DeleteAllSection()
         {
-            WritePrivateProfileString(null, null, null, inipath);
+            if (ExistINIFile())
+            {
+                File.Delete(inipath);
+            }
         }
 
 
@@ -138,22 +141,6 @@ namespace MyLib
         public bool ExistINIFile()
         {
             return File.Exists(inipath);
-        }
-
-        /// <summary>
-        /// 设置为当前应用的数据库配置
-        /// </summary>
-        public List<string> GetSelectedSqlConfig()
-        {
-            List<string> section = ReadSections();
-            for (int i = 0; i < section.Count; i++)
-            {
-                if (IniReadValue(section[i], "Checked") == "1")
-                {
-                    return ReadValues(section[i]);
-                }
-            }
-            return null;
         }
 
     }

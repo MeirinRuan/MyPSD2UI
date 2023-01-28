@@ -46,9 +46,12 @@ namespace MyPSD2UI
             foreach (var layerGroup in layerGroups)
             {
                 var ctrl = CtrlFactory.Load(layerGroup, ctrlId + index);
-                //ctrl.Show();
-                ctrls.Add(ctrl);
-                index += intervalNum;
+                if (ctrl != null)
+                {
+                    //ctrl.Show();
+                    ctrls.Add(ctrl);
+                    index += intervalNum;
+                }
                 
             }
         }
@@ -62,6 +65,8 @@ namespace MyPSD2UI
             MyIni ini = new MyIni(path + "\\" + Id + ".ini");
             if (ini != null)
             {
+                ini.DeleteAllSection();
+
                 foreach (var ctrl in ctrls)
                 {
                     foreach (PropertyInfo pi in ctrl.GetType().GetProperties())

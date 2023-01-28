@@ -21,15 +21,15 @@ namespace MyPSD2UI
         }
         public int Id { get; set; }
         public abstract string CtrlType { get; }
-        public int X { get; set; }
-        public int Y { get; set; }
+        public int x { get; set; }
+        public int y { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public string Comment { get; set; }
         private void SetPosition(LayerGroup layerGroup)
         {
-            X = layerGroup.Rect.X;
-            Y = layerGroup.Rect.Y;
+            x = layerGroup.Rect.X;
+            y = layerGroup.Rect.Y;
             Width = layerGroup.Rect.Width;
             Height = layerGroup.Rect.Height;
         }
@@ -57,6 +57,9 @@ namespace MyPSD2UI
                 case "Text":
                     ctrl = new MyText(id, layerGroup);
                     break;
+                case "Pic":
+                    ctrl = new MyText(id, layerGroup);
+                    break;
                 case "Button":
                     ctrl = new MyButton(id, layerGroup);
                     break;
@@ -65,6 +68,12 @@ namespace MyPSD2UI
                     break;
                 case "Progress":
                     ctrl = new MyProgress(id, layerGroup);
+                    break;
+                case "Bg"://背景图层放最底层
+                    ctrl = new MyText(1, layerGroup);
+                    break;
+                case "Null"://跳过该图层
+                    ctrl = null;
                     break;
                 default:
                     ctrl = new MyText(id, layerGroup);
