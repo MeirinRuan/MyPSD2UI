@@ -56,7 +56,7 @@ namespace MyPSD2UI
         //ui预览
         private void button2_Click(object sender, EventArgs e)
         {
-            if (isPsdFile())
+            if (IsPsdFile())
             {
                 if (!isShowUI)
                 {
@@ -119,9 +119,9 @@ namespace MyPSD2UI
         //生成ui配置
         private void button3_Click(object sender, EventArgs e)
         {
-            if (isPsdFile())
+            if (IsPsdFile())
             {
-                if (isNumber(textBox1.Text))
+                if (IsNumber(textBox1.Text))
                 {
                     MyCtrlParent mcp = new MyCtrlParent(Convert.ToInt32(textBox1.Text));
                     mcp.SaveIni(psdFile.LayerGroups, outputPath);
@@ -133,7 +133,7 @@ namespace MyPSD2UI
         }
 
         //psd是否存在
-        public bool isPsdFile()
+        public bool IsPsdFile()
         {
             if (psdFile != null)
             {
@@ -147,9 +147,9 @@ namespace MyPSD2UI
         }
 
         //字符串是否为数字
-        public bool isNumber(string str)
+        public bool IsNumber(string str)
         {
-            if (Regex.Match(str, @"\D").Success || str == "")
+            if (Regex.Match(str, @"\D").Success || String.IsNullOrEmpty(str))
                 return false;
             else
                 return true;
