@@ -23,6 +23,10 @@ namespace MyPSD2UI
         private List<int> ComboHeightInt = new List<int>();
         public string ComboHeight { get; set; }
 
+        /// <summary>
+        /// 设置combo大小
+        /// </summary>
+        /// <param name="layerGroup"></param>
         private void SetComboSize(LayerGroup layerGroup)
         {
             foreach (var layer in layerGroup.Layers)

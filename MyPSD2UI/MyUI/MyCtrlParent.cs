@@ -15,19 +15,18 @@ namespace MyPSD2UI
 {
     public class MyCtrlParent
     {
-        private int Id;
-        //起始id
-        public const int ctrlId = 20;
-        //id间隔
-        public const int intervalNum = 5;
-
         public MyCtrlParent(int id)
         {
             Id = id;
             ctrls.Add(CtrlFactory.Load(new LayerGroup(new Rectangle(LayerGroup.initX,LayerGroup.initY,LayerGroup.maxWidth,LayerGroup.maxHeight), id + "_Wnd"), id));
         }
 
-        List<MyCtrl> ctrls = new List<MyCtrl>();
+        private int Id;
+        //起始id
+        public const int ctrlId = 20;
+        //id间隔
+        public const int intervalNum = 5;
+        public List<MyCtrl> ctrls = new List<MyCtrl>();
 
         /// <summary>
         /// save ui.ini

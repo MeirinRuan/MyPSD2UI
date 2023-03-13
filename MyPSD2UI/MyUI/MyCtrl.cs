@@ -72,8 +72,11 @@ namespace MyPSD2UI
                 case "Bg"://背景图层放最底层
                     ctrl = new MyText(1, layerGroup);
                     break;
-                default://未定义则跳过
+                case "Null":
                     ctrl = null;
+                    break;
+                default:
+                    ctrl = new MyText(id, layerGroup);
                     break;
             }
                 

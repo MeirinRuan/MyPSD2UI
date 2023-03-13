@@ -12,9 +12,8 @@ namespace MyPSD2UI
     public partial class MainForm : Form
 	{
         PsdFile psdFile;
-
+        MyCtrlParent mcp;
         public bool isShowUI = false;
-
         public static string outputPath = Directory.GetCurrentDirectory() + "\\输出目录\\+ui";
 
         public MainForm()
@@ -123,7 +122,7 @@ namespace MyPSD2UI
             {
                 if (IsNumber(textBox1.Text))
                 {
-                    MyCtrlParent mcp = new MyCtrlParent(Convert.ToInt32(textBox1.Text));
+                    mcp = new MyCtrlParent(Convert.ToInt32(textBox1.Text));
                     mcp.SaveIni(psdFile.LayerGroups, outputPath);
                     Process.Start(outputPath);
                 }
