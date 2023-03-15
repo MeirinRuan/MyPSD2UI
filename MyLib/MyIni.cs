@@ -9,7 +9,7 @@ namespace MyLib
 {
     public class MyIni
     {
-        public string inipath;
+        private string inipath;
 
         [DllImport("kernel32")]//返回0表示失败，非0为成功
         private static extern long WritePrivateProfileString(string section, string key,

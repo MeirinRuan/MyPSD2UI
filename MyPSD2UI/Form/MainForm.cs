@@ -1,32 +1,49 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Diagnostics;
 using PSDFile;
+using MyLib;
 
 namespace MyPSD2UI
 {
     public partial class MainForm : Form
 	{
-        PsdFile psdFile;
-        MyCtrlParent mcp;
+        public PsdFile psdFile;
+        public MyCtrlParent mcp;
+        public MySqlOpration MySql;
         public bool isShowUI = false;
         public static string outputPath = Directory.GetCurrentDirectory() + "\\输出目录\\+ui";
 
         public MainForm()
 		{
-			InitializeComponent();
-		}
+            DateTime log_time = DateTime.Now;
+
+            InitializeComponent();
+            InitSql();
+
+            //log
+            MySql.logToDB("ui工具", log_time, DateTime.Now, "初始化");
+        }
+
+        public void InitSql()
+        {
+            //工具基础数据库初始化及开启链接
+            MySql = new MySqlOpration();
+            MySql.Init();
+            MySql.OpenConnection();
+            
+        }
 
         //打开psd文件
         private void button1_Click(object sender, EventArgs e)
 		{
 			if (openFileDialog1.ShowDialog() == DialogResult.OK)
 			{
-				//Bitmap bmp = null;
+                //Bitmap bmp = null;
+                DateTime log_time = DateTime.Now;
 
 				psdFile = new PsdFile(openFileDialog1.FileName, new LoadContext());
 
@@ -40,6 +57,9 @@ namespace MyPSD2UI
                     checkedListBox1.SetItemChecked(i, true);
                 }
                 textBox1.Clear();
+
+                //log
+                MySql.logToDB("ui工具", log_time, DateTime.Now, "打开psd文件");
             }
 		}
 
@@ -122,9 +142,14 @@ namespace MyPSD2UI
             {
                 if (IsNumber(textBox1.Text))
                 {
+                    DateTime log_time = DateTime.Now;
+
                     mcp = new MyCtrlParent(Convert.ToInt32(textBox1.Text));
                     mcp.SaveIni(psdFile.LayerGroups, outputPath);
                     Process.Start(outputPath);
+
+                    //log
+                    MySql.logToDB("ui工具", log_time, DateTime.Now, "生成ui配置");
                 }
                 else
                     MessageBox.Show("请输入数字id");
