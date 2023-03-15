@@ -404,17 +404,17 @@ namespace MyLib
         /// <param name="log_time">log开始时间</param>
         /// <param name="sys_time">当前时间</param>
         /// <param name="step">步骤</param>
-        public void logToDB(string type, DateTime log_time, DateTime sys_time, string step)
+        /// <param name="fileinfo">文件信息</param>
+        public void UseinfoLog(string type, DateTime log_time, DateTime sys_time, string step, string fileinfo = "")
         {
-            //获取IP hostName的
             IPHostEntry ipe = Dns.GetHostEntry(Dns.GetHostName());
-            //获取IPV4的地址的
             if (ipe.AddressList.Length > 1)
             {
+                //获取IPV4的地址的
                 IPAddress ipaddr = ipe.AddressList[1];
                 TimeSpan cost_time = sys_time - log_time;
-                string sql = string.Format("insert into useinfo_log(id,type,log_time,sys_time,cost_time,step,ip) values(" + "{0},'{1}','{2}','{3}','{4}','{5}','{6}'" + "); "
-                    , 0, type, log_time.ToString("yy-MM-dd HH:mm:ss"), sys_time.ToString("yy-MM-dd HH:mm:ss"), cost_time.TotalSeconds, step, ipaddr.ToString());
+                string sql = string.Format("insert into useinfo_log(id,type,log_time,sys_time,cost_time,step,fileinfo,ip) values(" + "{0},'{1}','{2}','{3}','{4}','{5}','{6}','{7}'" + "); "
+                    , 0, type, log_time.ToString("yy-MM-dd HH:mm:ss"), sys_time.ToString("yy-MM-dd HH:mm:ss"), cost_time.TotalSeconds, step, fileinfo, ipaddr.ToString());
                 ExecuteNonQuery(sql);
             }
 

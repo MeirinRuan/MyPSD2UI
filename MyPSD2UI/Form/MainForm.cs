@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using PSDFile;
 using MyLib;
+using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace MyPSD2UI
 {
@@ -14,6 +16,7 @@ namespace MyPSD2UI
         public PsdFile psdFile;
         public MyCtrlParent mcp;
         public MySqlOpration MySql;
+        public List<LayerGroup> layerGroupList = new List<LayerGroup>();
         public bool isShowUI = false;
         public static string outputPath = Directory.GetCurrentDirectory() + "\\输出目录\\+ui";
 
@@ -25,7 +28,7 @@ namespace MyPSD2UI
             InitSql();
 
             //log
-            MySql.logToDB("ui工具", log_time, DateTime.Now, "初始化");
+            MySql.UseinfoLog("ui工具", log_time, DateTime.Now, "初始化");
         }
 
         public void InitSql()
@@ -44,11 +47,19 @@ namespace MyPSD2UI
 			{
                 //Bitmap bmp = null;
                 DateTime log_time = DateTime.Now;
+                FileInfo fileInfo = new FileInfo(openFileDialog1.FileName);
+                string fileinfo = fileInfo.Name + "文件的大小:" + (fileInfo.Length/(1024*1024)) + "MB;";
 
-				psdFile = new PsdFile(openFileDialog1.FileName, new LoadContext());
+                psdFile = new PsdFile(openFileDialog1.FileName, new LoadContext());
+
+                //不修改原有的layergroups
+                foreach (var item in psdFile.LayerGroups)
+                {
+                    layerGroupList.Add(item);
+                }
 
                 //layergroup列表
-                checkedListBox1.DataSource = psdFile.LayerGroups;
+                checkedListBox1.DataSource = layerGroupList;
                 checkedListBox1.DisplayMember = "Name";
 
                 //默认全选
@@ -59,17 +70,13 @@ namespace MyPSD2UI
                 textBox1.Clear();
 
                 //log
-                MySql.logToDB("ui工具", log_time, DateTime.Now, "打开psd文件");
+                MySql.UseinfoLog("ui工具", log_time, DateTime.Now, "打开psd文件", fileinfo);
             }
 		}
 
         private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            //显示坐标
-            //LayerGroup layerGroup = checkedListBox1.SelectedItem as LayerGroup;
-            //layerGroup.SetRect();
-            //textBox1.Text = layerGroup.Rect.ToString();
-
+            
         }
 
         //ui预览
@@ -85,17 +92,24 @@ namespace MyPSD2UI
                     Width = 1500;
                     Height = 800;
 
-                    foreach (var layerGroup in psdFile.LayerGroups)
+                    Graphics g = CreateGraphics();
+                    Pen pen = new Pen(Color.Black);
+
+                    for (int i = 0; i < checkedListBox1.Items.Count; i++)
                     {
-                        Graphics g = CreateGraphics();
-                        Pen pen = new Pen(Color.Black);
-                        var rect = new Rectangle(
-                            layerGroup.Rect.X + flowLayoutPanel1.Location.X,
-                            layerGroup.Rect.Y + flowLayoutPanel1.Location.Y,
-                            layerGroup.Rect.Width,
-                            layerGroup.Rect.Height);
-                        g.DrawRectangle(pen, rect);
-                        g.DrawString(layerGroup.Name, new Font("宋体", 14), new SolidBrush(Color.Black), rect);
+                        Console.WriteLine(i + ":" + checkedListBox1.GetItemCheckState(i));
+
+                        if (checkedListBox1.GetItemCheckState(i) == CheckState.Checked)
+                        {
+                            LayerGroup layerGroup = (LayerGroup)checkedListBox1.Items[i];
+                            var rect = new Rectangle(
+                                layerGroup.Rect.X + flowLayoutPanel1.Location.X,
+                                layerGroup.Rect.Y + flowLayoutPanel1.Location.Y,
+                                layerGroup.Rect.Width,
+                                layerGroup.Rect.Height);
+                            g.DrawRectangle(pen, rect);
+                            g.DrawString(layerGroup.Name, new Font("宋体", 14), new SolidBrush(Color.Black), rect);
+                        }
                     }
 
                     //显示位图(无法适配所有psd文件)
@@ -119,18 +133,6 @@ namespace MyPSD2UI
                         pic.SizeMode = PictureBoxSizeMode.AutoSize;
                         flowLayoutPanel1.Controls.Add(pic);
                     }*/
-
-                    // 绘制控件
-                    /* LayerGroup layerGroup = listBox1.SelectedItem as LayerGroup;
-
-                    Graphics g = CreateGraphics();
-                    Pen pen = new Pen(Color.Black);
-                    var rect = new Rectangle(
-                        layerGroup.Rect.X + flowLayoutPanel1.Location.X,
-                        layerGroup.Rect.Y + flowLayoutPanel1.Location.Y,
-                        layerGroup.Rect.Width,
-                        layerGroup.Rect.Height);
-                    g.DrawRectangle(pen, rect);*/
                 }
             }
         }
@@ -145,11 +147,11 @@ namespace MyPSD2UI
                     DateTime log_time = DateTime.Now;
 
                     mcp = new MyCtrlParent(Convert.ToInt32(textBox1.Text));
-                    mcp.SaveIni(psdFile.LayerGroups, outputPath);
+                    mcp.SaveIni(layerGroupList, outputPath);
                     Process.Start(outputPath);
 
                     //log
-                    MySql.logToDB("ui工具", log_time, DateTime.Now, "生成ui配置");
+                    MySql.UseinfoLog("ui工具", log_time, DateTime.Now, "生成ui配置");
                 }
                 else
                     MessageBox.Show("请输入数字id");
