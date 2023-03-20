@@ -10,6 +10,7 @@ namespace MyLib
     public class MyIni
     {
         private string inipath;
+        public Dictionary<string, Dictionary<string, string>> iniInfo = new Dictionary<string, Dictionary<string, string>>();
 
         [DllImport("kernel32")]//返回0表示失败，非0为成功
         private static extern long WritePrivateProfileString(string section, string key,
@@ -27,10 +28,31 @@ namespace MyLib
         {
             
             inipath = INIPath;
-            
+
         }
 
         public MyIni() { }
+
+
+        public Dictionary<string, Dictionary<string, string>> InitInfo()
+        {
+            List<string> sectionList = ReadSections();
+
+            foreach (string section in sectionList)
+            {
+                List<string> keyList = ReadKeys(section);
+                List<string> valueList = ReadValues(section);
+                Dictionary<string,string> dic = new Dictionary<string,string>();
+                foreach (string key in keyList)
+                {
+                    dic.Add(key, valueList[keyList.IndexOf(key)]);
+                }
+                
+                iniInfo.Add(section, dic);
+            }
+
+            return iniInfo;
+        }
 
         /// <summary> 
         /// 读出INI文件 

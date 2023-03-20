@@ -19,10 +19,14 @@ namespace MyLib
         private StringBuilder connectStrBuilder;
 
         private string connectStr;
+
+        private bool isSqlConnect;
+
         public MySqlConnection Connection { get => connection; set => connection = value; }
         public Dictionary<string, string> ConnectItem { get => connectItem; set => connectItem = value; }
         public StringBuilder ConnectStrBuilder { get => connectStrBuilder; set => connectStrBuilder = value; }
         public string ConnectStr { get => connectStr; set => connectStr = value; }
+        public bool IsSqlConncect { get => isSqlConnect; }
 
         public void Init(string connStr = "")
         {
@@ -79,6 +83,7 @@ namespace MyLib
                 if (connection.State != ConnectionState.Open)
                 {
                     connection.Open();
+                    isSqlConnect = true;
                 }
                 return true;
             }
@@ -86,6 +91,7 @@ namespace MyLib
             {
                 //错误信息
                 Console.WriteLine("连接数据库失败！\n" + ex.Message);
+                isSqlConnect = false;
                 return false;
             }
         }
@@ -405,19 +411,21 @@ namespace MyLib
         /// <param name="sys_time">当前时间</param>
         /// <param name="step">步骤</param>
         /// <param name="fileinfo">文件信息</param>
-        public void UseinfoLog(string type, DateTime log_time, DateTime sys_time, string step, string fileinfo = "")
+        public void UseinfoLog(string type, DateTime log_time, DateTime sys_time, string step, string fileinfo = "" )
         {
-            IPHostEntry ipe = Dns.GetHostEntry(Dns.GetHostName());
-            if (ipe.AddressList.Length > 1)
+            if (IsSqlConncect)
             {
-                //获取IPV4的地址的
-                IPAddress ipaddr = ipe.AddressList[1];
-                TimeSpan cost_time = sys_time - log_time;
-                string sql = string.Format("insert into useinfo_log(id,type,log_time,sys_time,cost_time,step,fileinfo,ip) values(" + "{0},'{1}','{2}','{3}','{4}','{5}','{6}','{7}'" + "); "
-                    , 0, type, log_time.ToString("yy-MM-dd HH:mm:ss"), sys_time.ToString("yy-MM-dd HH:mm:ss"), cost_time.TotalSeconds, step, fileinfo, ipaddr.ToString());
-                ExecuteNonQuery(sql);
+                IPHostEntry ipe = Dns.GetHostEntry(Dns.GetHostName());
+                if (ipe.AddressList.Length > 1)
+                {
+                    //获取IPV4的地址的
+                    IPAddress ipaddr = ipe.AddressList[1];
+                    TimeSpan cost_time = sys_time - log_time;
+                    string sql = string.Format("insert into useinfo_log(id,type,log_time,sys_time,cost_time,step,fileinfo,ip) values(" + "{0},'{1}','{2}','{3}','{4}','{5}','{6}','{7}'" + "); "
+                        , 0, type, log_time.ToString("yy-MM-dd HH:mm:ss"), sys_time.ToString("yy-MM-dd HH:mm:ss"), cost_time.TotalSeconds, step, fileinfo, ipaddr.ToString());
+                    ExecuteNonQuery(sql);
+                }
             }
-
         }
     }
 }
