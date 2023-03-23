@@ -18,9 +18,9 @@ namespace MyPSD2UI
 
         public override string CtrlType => "CMyCtrlCombo";
         public string Click => "Yes";
-        private List<int> ComboWidthInt = new List<int>();
+        private List<int> ComboWidthList = new List<int>();
         public string ComboWidth { get; set; }
-        private List<int> ComboHeightInt = new List<int>();
+        private List<int> ComboHeightList = new List<int>();
         public string ComboHeight { get; set; }
 
         /// <summary>
@@ -38,12 +38,12 @@ namespace MyPSD2UI
                     {
                         if (param == "W")
                         {
-                            ComboWidthInt.Add(layer.Width);
+                            ComboWidthList.Add(layer.Width);
                             
                         }
                         else if (param == "H")
                         {
-                            ComboHeightInt.Add(layer.Height);
+                            ComboHeightList.Add(layer.Height);
                         }
                     }
                     catch(FormatException ex)
@@ -54,8 +54,8 @@ namespace MyPSD2UI
                 }
             }
 
-            ComboWidth = String.Join("_", ComboWidthInt);
-            ComboHeight = String.Join("_", ComboHeightInt);
+            ComboWidth = String.Join("_", ComboWidthList);
+            ComboHeight = String.Join("_", ComboHeightList);
 
             //默认取layergroup的size
             if (String.IsNullOrEmpty(ComboWidth))

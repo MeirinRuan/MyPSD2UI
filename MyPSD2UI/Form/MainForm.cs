@@ -8,14 +8,16 @@ using PSDFile;
 using MyLib;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using System.Linq;
+using System.Reflection;
 
 namespace MyPSD2UI
 {
     public partial class MainForm : Form
 	{
         private PsdFile psdFile;
-        private MyCtrlParent mcp;
         private MySqlOpration MySql;
+        private MyIni myIni;
         private bool isShowUI = false;
         private static string outputPath = Directory.GetCurrentDirectory() + "\\输出目录\\+ui";
         private Graphics g;
@@ -38,7 +40,7 @@ namespace MyPSD2UI
             //工具基础数据库初始化及开启链接
             MySql = new MySqlOpration();
             MySql.Init();
-            MySql.OpenConnection();
+            //MySql.OpenConnection();
         }
 
         //打开psd文件
@@ -61,16 +63,28 @@ namespace MyPSD2UI
 
                 psdFile = new PsdFile(openFileDialog1.FileName, new LoadContext());
 
-                //layergroup列表
-                checkedListBox1.DataSource = psdFile.LayerGroups;
-                checkedListBox1.DisplayMember = "Name";
+                listView1.Clear();
 
-                //默认全选
-                for (int i = 0; i < checkedListBox1.Items.Count; i++)
+                if (isShowUI)
                 {
-                    checkedListBox1.SetItemChecked(i, true);
+                    g.Clear(DefaultBackColor);
                 }
                 textBox1.Clear();
+
+                //layergroup列表
+                for (int i = 0; i < psdFile.LayerGroups.Count; i++)
+                {
+                    var name = psdFile.LayerGroups[i].Name;
+                    listView1.Items.Add(name);
+                    //有标记类型的默认勾选
+                    if (name.Contains("_") && !name.Contains("_Null"))
+                    {
+                        listView1.Items[i].Checked = true;
+                    }
+                }
+
+                ////对比psd和已有的ini配置标注
+                CompareConfig();
 
                 //log
                 MySql.UseinfoLog("ui工具", log_time, DateTime.Now, "打开psd文件", fileinfo);
@@ -109,13 +123,18 @@ namespace MyPSD2UI
                 {
                     DateTime log_time = DateTime.Now;
 
-                    mcp = new MyCtrlParent(Convert.ToInt32(textBox1.Text));
+                    MyCtrlParent mcp = new MyCtrlParent(Convert.ToInt32(textBox1.Text));
 
                     //根据选择的item生成ui
                     List<LayerGroup> layerGroups = new List<LayerGroup>();
-                    foreach (var item in checkedListBox1.CheckedItems)
+
+                    for (int i = 0; i < listView1.CheckedItems.Count; i++)
                     {
-                        layerGroups.Add((LayerGroup)item);
+                        var layerGroup = psdFile.LayerGroups.Where(x => x.Name == listView1.CheckedItems[i].Text);
+                        if (layerGroup.Count() > 0)
+                        {
+                            layerGroups.Add(layerGroup.First());
+                        }
                     }
 
                     mcp.SaveIni(layerGroups, outputPath);
@@ -145,11 +164,13 @@ namespace MyPSD2UI
                 DateTime log_time = DateTime.Now;
                 string fileinfo = fileInfo.Name;
 
-                MyIni myIni = new MyIni(Path.GetFullPath(openFileDialog1.FileName));
-                var iniInfo = myIni.InitInfo();
+                listView2.Clear();
+                iniLayerGroups.Clear();
+
+                myIni = new MyIni(Path.GetFullPath(openFileDialog1.FileName));
 
                 //构建已有ini配置的layergroup list
-                foreach (var item in iniInfo)
+                foreach (var item in myIni.IniInfo)
                 {
                     Dictionary<string, string> section = item.Value;
                     if (section["CtrlType"] != "CMyWnd")
@@ -159,41 +180,90 @@ namespace MyPSD2UI
                     }
                 }
 
-                //layergroup列表
-                checkedListBox2.DataSource = iniLayerGroups;
-                checkedListBox2.DisplayMember = "Name";
-
-                //默认全选
-                for (int i = 0; i < checkedListBox2.Items.Count; i++)
+                for (int i = 0; i < iniLayerGroups.Count; i++)
                 {
-                    checkedListBox2.SetItemChecked(i, true);
+                    var name = iniLayerGroups[i].Name;
+                    listView2.Items.Add(name);
+                    //已有配置是全部勾选的
+                    listView2.Items[i].Checked = true;
                 }
 
-                //对比psd和已有的配置并标注
-                if (checkedListBox1.Items.Count > 0 && checkedListBox2.Items.Count > 0)
+                //对比psd和已有的配置
+                CompareConfig();
+
+                //log
+                MySql.UseinfoLog("ui工具", log_time, DateTime.Now, "读取ui配置", fileinfo);
+            }
+        }
+
+        //控件同步
+        private void button5_Click(object sender, EventArgs e)
+        {
+            DateTime log_time = DateTime.Now;
+
+            //考虑到id不一定一致，只根据有相同命名的图层来同步
+            if (listView1.Items.Count > 0 && listView2.Items.Count > 0)
+            {
+                //先复制一个一样的文件
+                var id = myIni.IniInfo.Keys.First();
+                var newFilePath = outputPath + "\\" + id + ".ini";
+                File.Copy(myIni.IniPath, newFilePath, true);
+
+                MyIni myini2 = new MyIni(newFilePath);
+
+                for (int i = 0; i < listView2.Items.Count; i++)
                 {
-                    for (int i = 0; i < checkedListBox2.Items.Count; i++)
+                    LayerGroup layerGroup2 = iniLayerGroups.Where(x => x.Name == listView2.Items[i].Text).First();
+                    for (int j = 0; j < listView1.Items.Count; j++)
                     {
-                        LayerGroup layerGroup2 = (LayerGroup)checkedListBox2.Items[i];
-                        bool isSame = false;
-                        for (int j = 0; j < checkedListBox1.Items.Count; j ++)
+                        LayerGroup layerGroup1 = psdFile.LayerGroups.Where(x => x.Name == listView1.Items[j].Text).First();
+                        if (layerGroup1.Name == layerGroup2.Name)
                         {
-                            LayerGroup layerGroup1 = (LayerGroup)checkedListBox1.Items[j];
-                            if (layerGroup1.Name == layerGroup2.Name)
-                            {
-                                isSame = true;
-                                break;
-                            }
-                        }
-                        if (!isSame)
-                        {
-                            layerGroup2.Name += " //add";
+                            iniLayerGroups[i].Rect = layerGroup1.Rect;
+                            var section = myIni.IniInfo.Keys.ElementAt(i+1);
+                            myini2.IniWriteValue(section, "x", layerGroup1.Rect.X.ToString());
+                            myini2.IniWriteValue(section, "y", layerGroup1.Rect.Y.ToString());
+                            break;
                         }
                     }
                 }
 
+                Process.Start(outputPath);
+
                 //log
-                MySql.UseinfoLog("ui工具", log_time, DateTime.Now, "读取ui配置", fileinfo);
+                MySql.UseinfoLog("ui工具", log_time, DateTime.Now, "控件同步");
+            }
+            else
+            {
+                MessageBox.Show("请先导入配置。");
+            }
+        }
+
+        /// <summary>
+        /// 对比psd和已有的配置
+        /// </summary>
+        private void CompareConfig()
+        {
+            if (listView1.Items.Count > 0 && listView2.Items.Count > 0)
+            {
+                for (int i = 0; i < listView2.Items.Count; i++)
+                {
+                    LayerGroup layerGroup2 = iniLayerGroups.Where(x => x.Name == listView2.Items[i].Text).First();
+                    bool isSame = false;
+                    for (int j = 0; j < listView1.Items.Count; j++)
+                    {
+                        LayerGroup layerGroup1 = psdFile.LayerGroups.Where(x => x.Name == listView1.Items[j].Text).First();
+                        if (layerGroup1.Name == layerGroup2.Name)
+                        {
+                            isSame = true;
+                            break;
+                        }
+                    }
+                    if (!isSame)
+                    {
+                        listView2.Items[i].BackColor = Color.MistyRose;
+                    }
+                }
             }
         }
 
@@ -204,39 +274,44 @@ namespace MyPSD2UI
         {
             g = CreateGraphics();
 
-            foreach (var item in checkedListBox1.CheckedItems)
+            for (int i = 0; i < listView1.CheckedItems.Count; i++)
             {
-                LayerGroup layerGroup = (LayerGroup)item;
-                var rect = new Rectangle(
+                LayerGroup layerGroup;
+                var IlayerGroup = psdFile.LayerGroups.Where(x => x.Name == listView1.CheckedItems[i].Text);
+                if (IlayerGroup.Count() > 0)
+                {
+                    layerGroup = IlayerGroup.First();
+                    var rect = new Rectangle(
                     layerGroup.Rect.X + flowLayoutPanel1.Location.X,
                     layerGroup.Rect.Y + flowLayoutPanel1.Location.Y,
                     layerGroup.Rect.Width,
                     layerGroup.Rect.Height);
-                g.DrawRectangle(pen, rect);
-                g.DrawString(layerGroup.Name, new Font("宋体", 14), new SolidBrush(Color.Black), rect);
-            }
+                    g.DrawRectangle(pen, rect);
+                    g.DrawString(layerGroup.Name, new Font("宋体", 14), new SolidBrush(Color.Black), rect);
 
-            //显示位图(无法适配所有psd文件)
-            /*foreach( var layer in layerGroup.Layers)
-            {
-                if (layer.HasImage)
-                    g.DrawImage(layer.GetBitmap(), rect);
-            }*/
+                    //显示位图(无法适配所有psd文件)
+                    /*foreach (var layer in layerGroup.Layers)
+                    {
+                        if (layer.HasImage)
+                            g.DrawImage(layer.GetBitmap(), rect);
+                    }*/
 
-            //显示位图
-            /* LayerGroup layerGroup = listBox1.SelectedItem as LayerGroup;
+                    //显示位图
+                    /* LayerGroup layerGroup = listBox1.SelectedItem as LayerGroup;
 
-            flowLayoutPanel1.Controls.Clear();
+                    flowLayoutPanel1.Controls.Clear();
 
-            foreach (var layer in layerGroup.Layers)
-            {
-                Bitmap bitmap = layer.GetBitmap();
-                PictureBox pic = new PictureBox();
-                pic.Image = bitmap;
-                pic.BorderStyle = BorderStyle.FixedSingle;
-                pic.SizeMode = PictureBoxSizeMode.AutoSize;
-                flowLayoutPanel1.Controls.Add(pic);
-            }*/
+                    foreach (var layer in layerGroup.Layers)
+                    {
+                        Bitmap bitmap = layer.GetBitmap();
+                        PictureBox pic = new PictureBox();
+                        pic.Image = bitmap;
+                        pic.BorderStyle = BorderStyle.FixedSingle;
+                        pic.SizeMode = PictureBoxSizeMode.AutoSize;
+                        flowLayoutPanel1.Controls.Add(pic);
+                    }*/
+                }
+            }      
         }
 
         /// <summary>
@@ -269,7 +344,7 @@ namespace MyPSD2UI
                 return true;
         }
 
-        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
             if (g != null && isShowUI)
             {
@@ -278,9 +353,11 @@ namespace MyPSD2UI
             }
         }
 
-        private void checkedListBox2_DrawItem(object sender, DrawItemEventArgs e)
+        private void listView2_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
 
         }
+
+
     }
 }
