@@ -40,7 +40,7 @@ namespace MyPSD2UI
             //工具基础数据库初始化及开启链接
             MySql = new MySqlOpration();
             MySql.Init();
-            //MySql.OpenConnection();
+            MySql.OpenConnection();
         }
 
         //打开psd文件
