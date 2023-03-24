@@ -223,6 +223,8 @@ namespace MyPSD2UI
                             var section = myIni.IniInfo.Keys.ElementAt(i+1);
                             myini2.IniWriteValue(section, "x", layerGroup1.Rect.X.ToString());
                             myini2.IniWriteValue(section, "y", layerGroup1.Rect.Y.ToString());
+                            myini2.IniWriteValue(section, "Width", layerGroup1.Rect.Width.ToString());
+                            myini2.IniWriteValue(section, "Height", layerGroup1.Rect.Height.ToString());
                             break;
                         }
                     }
