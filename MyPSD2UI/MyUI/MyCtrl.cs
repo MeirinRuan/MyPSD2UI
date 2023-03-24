@@ -49,30 +49,31 @@ namespace MyPSD2UI
         {
             MyCtrl ctrl;
 
-            switch (MatchCtrlType(layerGroup.Name))
+            //忽略大小写
+            switch (MatchCtrlType(layerGroup.Name).ToLower())
             {
-                case "Wnd":
+                case "wnd":
                     ctrl = new MyWnd(id, layerGroup);
                     break;
-                case "Text":
+                case "text":
                     ctrl = new MyText(id, layerGroup);
                     break;
-                case "Pic":
+                case "pic":
                     ctrl = new MyText(id, layerGroup);
                     break;
-                case "Button":
+                case "button":
                     ctrl = new MyButton(id, layerGroup);
                     break;
-                case "Combo":
+                case "combo":
                     ctrl = new MyCombo(id, layerGroup);
                     break;
-                case "Progress":
+                case "progress":
                     ctrl = new MyProgress(id, layerGroup);
                     break;
-                case "Bg"://背景图层放最底层
+                case "bg"://背景图层放最底层
                     ctrl = new MyText(1, layerGroup);
                     break;
-                case "Null":
+                case "null":
                     ctrl = null;
                     break;
                 default:

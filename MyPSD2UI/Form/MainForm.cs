@@ -40,7 +40,7 @@ namespace MyPSD2UI
             //工具基础数据库初始化及开启链接
             MySql = new MySqlOpration();
             MySql.Init();
-            MySql.OpenConnection();
+            //MySql.OpenConnection();
         }
 
         //打开psd文件
@@ -76,6 +76,8 @@ namespace MyPSD2UI
                 {
                     var name = psdFile.LayerGroups[i].Name;
                     listView1.Items.Add(name);
+                    //加入右键菜单
+                    ListViewComboBox.Items.Add(name);
                     //有标记类型的默认勾选
                     if (name.Contains("_") && !name.Contains("_Null"))
                     {
@@ -83,7 +85,7 @@ namespace MyPSD2UI
                     }
                 }
 
-                ////对比psd和已有的ini配置标注
+                //对比psd和已有的ini配置标注
                 CompareConfig();
 
                 //log
@@ -217,7 +219,7 @@ namespace MyPSD2UI
                     for (int j = 0; j < listView1.Items.Count; j++)
                     {
                         LayerGroup layerGroup1 = psdFile.LayerGroups.Where(x => x.Name == listView1.Items[j].Text).First();
-                        if (layerGroup1.Name == layerGroup2.Name)
+                        if (layerGroup1.Name.ToLower() == layerGroup2.Name.ToLower() && iniLayerGroups[i].Rect != layerGroup1.Rect)
                         {
                             iniLayerGroups[i].Rect = layerGroup1.Rect;
                             var section = myIni.IniInfo.Keys.ElementAt(i+1);
@@ -229,7 +231,7 @@ namespace MyPSD2UI
                         }
                     }
                 }
-
+                
                 Process.Start(outputPath);
 
                 //log
@@ -255,7 +257,7 @@ namespace MyPSD2UI
                     for (int j = 0; j < listView1.Items.Count; j++)
                     {
                         LayerGroup layerGroup1 = psdFile.LayerGroups.Where(x => x.Name == listView1.Items[j].Text).First();
-                        if (layerGroup1.Name == layerGroup2.Name)
+                        if (layerGroup1.Name.ToLower() == layerGroup2.Name.ToLower())
                         {
                             isSame = true;
                             break;
@@ -360,6 +362,36 @@ namespace MyPSD2UI
 
         }
 
+        private void listView2_MouseClick(object sender, MouseEventArgs e)
+        {
+            ListView listView = (ListView)sender;
+            ListViewItem item = listView.GetItemAt(e.X, e.Y);
+            if (item != null && e.Button == MouseButtons.Right)
+            {
+                ListViewRightMenu.Show(listView, e.X, e.Y);
+            }
+        }
 
+        private void ListViewComboBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (ListViewComboBox.SelectedItem != null)
+                {
+                    if (MessageBox.Show("图层<" + ListViewComboBox.SelectedItem.ToString() + ">将被同步至ini配置中的<" + listView2.SelectedItems[0].Text + ">", "提示", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                    {
+                        LayerGroup layerGroup1 = psdFile.LayerGroups.Where(x => x.Name == ListViewComboBox.SelectedItem.ToString()).First();
+                        int index = iniLayerGroups.FindIndex(x => x.Name == listView2.SelectedItems[0].Text);
+
+                        iniLayerGroups[index].Rect = layerGroup1.Rect;
+                        var section = myIni.IniInfo.Keys.ElementAt(index + 1);
+                        myIni.IniWriteValue(section, "x", layerGroup1.Rect.X.ToString());
+                        myIni.IniWriteValue(section, "y", layerGroup1.Rect.Y.ToString());
+                        myIni.IniWriteValue(section, "Width", layerGroup1.Rect.Width.ToString());
+                        myIni.IniWriteValue(section, "Height", layerGroup1.Rect.Height.ToString());
+                    }
+                }
+            }
+        }
     }
 }

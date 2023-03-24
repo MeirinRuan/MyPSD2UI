@@ -29,6 +29,7 @@ namespace MyPSD2UI
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.button1 = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -40,7 +41,11 @@ namespace MyPSD2UI
             this.listView1 = new System.Windows.Forms.ListView();
             this.listView2 = new System.Windows.Forms.ListView();
             this.button5 = new System.Windows.Forms.Button();
+            this.ListViewRightMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.同步ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ListViewComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.groupBox1.SuspendLayout();
+            this.ListViewRightMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -138,6 +143,7 @@ namespace MyPSD2UI
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.SmallIcon;
             this.listView2.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listView2_ItemChecked);
+            this.listView2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView2_MouseClick);
             // 
             // button5
             // 
@@ -148,6 +154,30 @@ namespace MyPSD2UI
             this.button5.Text = "控件同步";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // ListViewRightMenu
+            // 
+            this.ListViewRightMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.同步ToolStripMenuItem});
+            this.ListViewRightMenu.Name = "ListViewRightMenu";
+            this.ListViewRightMenu.Size = new System.Drawing.Size(181, 48);
+            // 
+            // 同步ToolStripMenuItem
+            // 
+            this.同步ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ListViewComboBox});
+            this.同步ToolStripMenuItem.Name = "同步ToolStripMenuItem";
+            this.同步ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.同步ToolStripMenuItem.Text = "同步";
+            // 
+            // ListViewComboBox
+            // 
+            this.ListViewComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.ListViewComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.ListViewComboBox.Name = "ListViewComboBox";
+            this.ListViewComboBox.Size = new System.Drawing.Size(121, 25);
+            this.ListViewComboBox.ToolTipText = "按回车键确认";
+            this.ListViewComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListViewComboBox_KeyDown);
             // 
             // MainForm
             // 
@@ -171,6 +201,7 @@ namespace MyPSD2UI
             this.Text = "myui生成器";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.ListViewRightMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -188,6 +219,9 @@ namespace MyPSD2UI
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ListView listView2;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.ContextMenuStrip ListViewRightMenu;
+        private System.Windows.Forms.ToolStripMenuItem 同步ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripComboBox ListViewComboBox;
     }
 }
 
