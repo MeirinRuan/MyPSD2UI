@@ -40,7 +40,7 @@ namespace MyPSD2UI
             //工具基础数据库初始化及开启链接
             MySql = new MySqlOpration();
             MySql.Init();
-            //MySql.OpenConnection();
+            MySql.OpenConnection();
         }
 
         //打开psd文件
@@ -177,6 +177,7 @@ namespace MyPSD2UI
                     Dictionary<string, string> section = item.Value;
                     if (section["CtrlType"] != "CMyWnd")
                     {
+                        var name = section["Comment"] == null ? "" : section["Comment"];
                         LayerGroup layerGroup = new LayerGroup(new Rectangle(Convert.ToInt16(section["x"]), Convert.ToInt16(section["y"]), Convert.ToInt16(section["Width"]), Convert.ToInt16(section["Height"])), section["Comment"]);
                         iniLayerGroups.Add(layerGroup);
                     }
